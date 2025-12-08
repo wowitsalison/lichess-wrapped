@@ -1,10 +1,420 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Lichess Wrapped</title>
-    </head>
-    <body>
-        <h1>This will eventually be Lichess Wrapped.</h1>
-        <p>This is the home page.</p>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lichess Wrapped</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, #4ade80 0%, #3b82f6 100%);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .error {
+            color: #fca5a5;
+            margin-top: 1rem;
+        }
+        
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .slide-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .big-number {
+            font-size: 5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-list {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stat-name {
+            font-size: 1.1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        
+        .nav-button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            width: auto;
+        }
+        
+        .dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .dot.active {
+            background: white;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .streak-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .streak-item {
+            text-align: center;
+        }
+        
+        .streak-number {
+            font-size: 4rem;
+            font-weight: bold;
+        }
+        
+        .win-streak {
+            color: #4ade80;
+        }
+        
+        .lose-streak {
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card" id="inputCard">
+            <div>
+                <h1>Lichess Wrapped</h1>
+                <p class="subtitle">It's like Sp*tify wrapped</p>
+                <input type="text" id="username" placeholder="Enter Lichess username">
+                <button onclick="fetchStats()" id="submitBtn">Generate Wrapped</button>
+                <p class="error hidden" id="error"></p>
+            </div>
+        </div>
+        
+        <div class="card hidden" id="statsCard">
+            <div class="slide-content" id="slideContent"></div>
+            <div class="navigation">
+                <button class="nav-button" onclick="previousSlide()" id="prevBtn">Previous</button>
+                <div class="dots" id="dots"></div>
+                <button class="nav-button" onclick="nextSlide()" id="nextBtn">Next</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let stats = null;
+        let currentSlide = 0;
+        let slides = [];
+        
+        function showError(message) {
+            document.getElementById('error').textContent = message;
+            document.getElementById('error').classList.remove('hidden');
+        }
+        
+        function hideError() {
+            document.getElementById('error').classList.add('hidden');
+        }
+        
+        async function fetchStats() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                showError('Please enter a username');
+                return;
+            }
+            
+            hideError();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch(`/api/stats/${username}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch stats');
+                }
+                
+                stats = data;
+                createSlides();
+                showStats();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Wrapped';
+            }
+        }
+        
+        function createSlides() {
+            slides = [
+                {
+                    //icon: '',
+                    title: 'Your Lichess Wrapped',
+                    content: `
+                        <div class="big-number">${stats.totalGames}</div>
+                        <div style="font-size: 1.5rem;">Games Played</div>
+                    `
+                },
+                {
+                    //icon: '',
+                    title: 'Top Openings',
+                    content: `
+                        <div class="stat-list">
+                            ${stats.topOpenings.map(opening => `
+                                <div class="stat-item">
+                                    <span class="stat-name">${opening.name}</span>
+                                    <span class="stat-value">${opening.count}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `
+                },
+                {
+                    //icon: '',
+                    title: 'Most Frequent Opponents',
+                    content: `
+                        <div class="stat-list">
+                            ${stats.topOpponents.map(opponent => `
+                                <div class="stat-item">
+                                    <span class="stat-name">${opponent.name}</span>
+                                    <span class="stat-value">${opponent.count} games</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `
+                },
+                {
+                    //icon: '',
+                    title: 'Your Streaks',
+                    content: `
+                        <div class="streak-container">
+                            <div class="streak-item">
+                                <div class="streak-number win-streak">${stats.maxWinStreak}</div>
+                                <div style="font-size: 1.2rem;">Longest Win Streak</div>
+                            </div>
+                            <div class="streak-item">
+                                <div class="streak-number lose-streak">${stats.maxLoseStreak}</div>
+                                <div style="font-size: 1.2rem;">Longest Lose Streak</div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    //icon: '',
+                    title: 'Time Control Champion',
+                    content: `
+                        <div class="big-number" style="text-transform: capitalize;">${stats.favoriteTimeControl.name}</div>
+                        <div style="font-size: 1.5rem;">${stats.favoriteTimeControl.count} games</div>
+                    `
+                },
+                {
+                    //icon: '',
+                    title: 'Marathon Match',
+                    content: `
+                        <div class="big-number">${stats.longestGame}</div>
+                        <div style="font-size: 1.5rem;">Moves in Longest Game</div>
+                    `
+                }
+            ];
+        }
+        
+        function showStats() {
+            document.getElementById('inputCard').classList.add('hidden');
+            document.getElementById('statsCard').classList.remove('hidden');
+            currentSlide = 0;
+            renderSlide();
+            renderDots();
+        }
+        
+        function renderSlide() {
+            const slide = slides[currentSlide];
+            document.getElementById('slideContent').innerHTML = `
+                ${slide.icon ? `<div class="icon">${slide.icon}</div>` : ''}
+                <div class="slide-title">${slide.title}</div>
+                ${slide.content}
+            `;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            
+            if (currentSlide === slides.length - 1) {
+                document.getElementById('nextBtn').textContent = 'Take me back!';
+                document.getElementById('nextBtn').onclick = reset;
+            } else {
+                document.getElementById('nextBtn').textContent = 'Next';
+                document.getElementById('nextBtn').onclick = nextSlide;
+            }
+            
+            updateDots();
+        }
+        
+        function renderDots() {
+            const dotsContainer = document.getElementById('dots');
+            dotsContainer.innerHTML = slides.map((_, idx) => 
+                `<div class="dot ${idx === currentSlide ? 'active' : ''}"></div>`
+            ).join('');
+        }
+        
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                renderSlide();
+            }
+        }
+        
+        function previousSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide();
+            }
+        }
+        
+        function reset() {
+            document.getElementById('statsCard').classList.add('hidden');
+            document.getElementById('inputCard').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            stats = null;
+            currentSlide = 0;
+            slides = [];
+        }
+        
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                fetchStats();
+            }
+        });
+    </script>
+</body>
 </html>
