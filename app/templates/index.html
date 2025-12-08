@@ -204,10 +204,10 @@
     <div class="container">
         <div class="card" id="inputCard">
             <div>
-                <h1>Lichess Wrapped</h1>
+                <h1>Lichess Wrapped 2025</h1>
                 <p class="subtitle">It's like Sp*tify wrapped</p>
                 <input type="text" id="username" placeholder="Enter Lichess username">
-                <button onclick="fetchStats()" id="submitBtn">Generate Wrapped</button>
+                <button onclick="fetchStats()" id="submitBtn">Show me what's up!</button>
                 <p class="error hidden" id="error"></p>
             </div>
         </div>
@@ -335,6 +335,38 @@
                     content: `
                         <div class="big-number">${stats.longestGame}</div>
                         <div style="font-size: 1.5rem;">Moves in Longest Game</div>
+                    `
+                },
+                {
+                    //icon: '',
+                    title: 'All Of That All At Once',
+                    content: `
+                        <div class="stat-list" style="font-size: 0.9rem;">
+                            <div class="stat-item">
+                                <span class="stat-name">Total Games</span>
+                                <span class="stat-value">${stats.totalGames}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-name">Top Opening</span>
+                                <span class="stat-value">${stats.topOpenings[0]?.name.substring(0, 20) || 'N/A'}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-name">Most Played Opponent</span>
+                                <span class="stat-value">${stats.topOpponents[0]?.name || 'N/A'}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-name">Best Win Streak</span>
+                                <span class="stat-value">${stats.maxWinStreak}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-name">Favorite Time Control</span>
+                                <span class="stat-value" style="text-transform: capitalize;">${stats.favoriteTimeControl.name}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-name">Longest Game</span>
+                                <span class="stat-value">${stats.longestGame} moves</span>
+                            </div>
+                        </div>
                     `
                 }
             ];

@@ -22,11 +22,9 @@ def api_user(username):
 # Get user game statistics
 @app.route("/api/stats/<username>")
 def api_stats(username):
-    max_games = request.args.get('max', 500, type=int)
-    
     url = f"https://lichess.org/api/games/user/{username}"
     params = {
-        "max": max_games,
+        "since": 1735689600000,
         "pgnInJson": "true",
         "opening": "true"
     }
