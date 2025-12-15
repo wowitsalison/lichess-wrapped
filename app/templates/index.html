@@ -66,10 +66,10 @@
         <div class="input-card animate-fade-in">
             <div class="chess-piece large mb-4">♞</div>
             <h1 class="font-display text-gradient" style="font-size: 2.5rem; margin-bottom: 0.5rem;">Lichess Wrapped</h1>
-            <p class="text-muted">Your 2025 Chess Year in Review</p>
+            <p class="text-muted">Your 2025 Lichess Year in Review</p>
             
-            <input type="text" id="username" class="custom-input" placeholder="Enter Lichess Username" autocomplete="off">
-            <button onclick="fetchStats()" id="submitBtn" class="custom-button">Generate Wrapped</button>
+            <input type="text" id="username" class="custom-input" placeholder="Enter your Lichess username" autocomplete="off">
+            <button onclick="fetchStats()" id="submitBtn" class="custom-button">Show me my Wrapped!</button>
             <p id="error" class="error-msg"></p>
         </div>
     </div>
@@ -101,7 +101,7 @@
             // Loading State
             errorEl.textContent = '';
             btn.disabled = true;
-            btn.textContent = 'Analyze Games...';
+            btn.textContent = 'Searching your soul for chess...';
 
             try {
                 const response = await fetch(`/api/stats/${username}`);
