@@ -5,60 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lichess Wrapped 2025</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        .input-overlay {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--background);
-            z-index: 100;
-            transition: opacity 0.5s ease;
-        }
-        .input-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .input-card {
-            background: var(--card);
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
-        }
-        .custom-input {
-            width: 100%;
-            padding: 1rem;
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            color: var(--foreground);
-            border-radius: 0.5rem;
-            margin: 1.5rem 0;
-            font-family: var(--font-mono);
-            font-size: 1.1rem;
-        }
-        .custom-button {
-            width: 100%;
-            padding: 1rem;
-            background: var(--primary);
-            color: var(--primary-foreground);
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            font-family: var(--font-display);
-            font-size: 1.2rem;
-            transition: transform 0.2s;
-        }
-        .custom-button:hover:not(:disabled) { transform: scale(1.02); }
-        .custom-button:disabled { opacity: 0.5; cursor: wait; }
-        .error-msg { color: var(--destructive); margin-top: 1rem; min-height: 1.5rem; }
-    </style>
 </head>
 <body>
 
@@ -131,11 +77,24 @@
             const container = document.getElementById('slidesWrapper');
             const dotsContainer = document.getElementById('dotsContainer');
             
-            // Helper to clean up opening names
-            const cleanOpening = (name) => name.split(':')[0].split(',')[0];
-            
+            // Helper to generate ranking HTML
+            const renderRanking = (items) => `
+                <div class="ranking-list animate-slide-up delay-200">
+                    ${items.map((item, i) => `
+                        <div class="ranking-item">
+                            <span class="rank-number">#${i+1}</span>
+                            <span class="rank-name">${item.name}</span>
+                            <span class="rank-count">${item.count}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            const ratingSign = stats.ratingJourney.diff >= 0 ? '+' : '';
+            const ratingClass = stats.ratingJourney.diff >= 0 ? 'positive' : 'negative';
+
             const slidesData = [
-                // Slide 1: Intro
+                // 1. Intro
                 {
                     bg: 'slide-bg-1',
                     content: `
@@ -144,23 +103,28 @@
                         <p class="text-muted stat-label mt-4">2025</p>
                         <div class="stat-number animate-count-up delay-300" style="margin-top: 2rem">${stats.totalGames}</div>
                         <div class="stat-label">Games Played</div>
-                        <p class="text-muted stat-label mt-4" style="margin-top: 2rem">That's a lot...</div>
-                        <p class="text-muted stat-label mt-4">(Is that how you spend your free time?)</div>
                     `
                 },
-                // Slide 2: Top Opening
+                // 2. Favorite Opening
                 {
                     bg: 'slide-bg-2',
                     content: `
                         <div class="chess-piece large mb-4">♗</div>
-                        <h2 class="font-display text-accent mb-8">Favorite Opening</h2>
-                        <div class="stat-number animate-scale-up delay-200" style="font-size: 3.5rem; line-height: 1.2;">
-                            ${stats.topOpenings[0]?.name ? cleanOpening(stats.topOpenings[0].name) : 'N/A'}
+                        <h2 class="font-display text-accent mb-8">Your Favorite Opening</h2>
+                        <div class="stat-number animate-scale-up delay-200" style="font-size: 3rem; line-height: 1.2;">
+                            ${stats.topOpenings[0]?.name || 'N/A'}
                         </div>
-                        <div class="stat-label text-muted mt-4">Played ${stats.topOpenings[0]?.count || 0} times</div>
                     `
                 },
-                // Slide 3: Time Control
+                // 3. Top 5 Openings
+                {
+                    bg: 'slide-bg-2',
+                    content: `
+                        <h2 class="font-display text-gradient mb-8">Opening Repertoire</h2>
+                        ${renderRanking(stats.topOpenings)}
+                    `
+                },
+                // Slide 4: Time Control
                 {
                     bg: 'slide-bg-3',
                     content: `
@@ -174,9 +138,41 @@
                         </div>
                     `
                 },
-                // Slide 4: Streaks
+                // 5. Rating Journey
+                {
+                    bg: 'slide-bg-5',
+                    content: `
+                        <h2 class="font-display text-gradient">Rating Journey</h2>
+                        <div class="journey-container animate-fade-in delay-200">
+                            <div class="journey-node">
+                                <span class="text-muted text-sm">Jan 1st</span>
+                                <span class="text-2xl font-bold">${stats.ratingJourney.start}</span>
+                            </div>
+                            <div class="journey-arrow">→</div>
+                            <div class="journey-node">
+                                <span class="text-muted text-sm">Now</span>
+                                <span class="text-2xl font-bold">${stats.ratingJourney.end}</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 2rem;">
+                            <span class="rating-diff ${ratingClass} animate-scale-up delay-500">
+                                ${ratingSign}${stats.ratingJourney.diff}
+                            </span>
+                        </div>
+                        <div class="stat-label mt-4">Elo Points Change</div>
+                    `
+                },
+                // 6. Top Opponents
                 {
                     bg: 'slide-bg-4',
+                    content: `
+                        <h2 class="font-display text-destructive mb-8">Greatest Rivals</h2>
+                        ${renderRanking(stats.topOpponents)}
+                    `
+                },
+                // 7. Streaks
+                {
+                    bg: 'slide-bg-1',
                     content: `
                         <div class="chess-piece large mb-4">🔥</div>
                         <h2 class="font-display text-destructive mb-8">Your Longest Streaks</h2>
@@ -194,40 +190,33 @@
                         </div>
                     `
                 },
-                // Slide 5: Longest Game
-                {
-                    bg: 'slide-bg-5',
-                    content: `
-                        <div class="chess-piece large mb-4">♟</div>
-                        <h2 class="font-display text-gradient mb-8">Marathon Match</h2>
-                        <div class="stat-number animate-count-up delay-200">${stats.longestGame}</div>
-                        <div class="stat-label">Moves in your longest game</div>
-                    `
-                },
-                // Slide 6: Summary
+                // 8. Summary
                 {
                     bg: 'slide-bg-1',
                     content: `
-                        <h2 class="font-display text-gradient mb-8">In Summary</h2>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; text-align: left;">
+                        <h2 class="font-display text-gradient mb-6">2025 Wrapped</h2>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; text-align: left; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 1rem;">
                             <div>
-                                <div class="text-muted text-sm">Total Games</div>
-                                <div class="text-xl font-bold">${stats.totalGames}</div>
+                                <div class="text-muted text-xs">TOTAL GAMES</div>
+                                <div class="text-lg font-bold">${stats.totalGames}</div>
                             </div>
                             <div>
-                                <div class="text-muted text-sm">Top Opponent</div>
-                                <div class="text-xl font-bold">${stats.topOpponents[0]?.name || '-'}</div>
+                                <div class="text-muted text-xs">RATING CHANGE</div>
+                                <div class="text-lg font-bold ${ratingClass}">${ratingSign}${stats.ratingJourney.diff}</div>
                             </div>
                             <div>
-                                <div class="text-muted text-sm">Best Streak</div>
-                                <div class="text-xl font-bold text-primary">${stats.maxWinStreak}</div>
+                                <div class="text-muted text-xs">TOP OPENING</div>
+                                <div class="text-lg font-bold" style="font-size: 0.9rem">${stats.topOpenings[0]?.name.substring(0, 15)}</div>
                             </div>
                             <div>
-                                <div class="text-muted text-sm">Favorite Mode</div>
-                                <div class="text-xl font-bold capitalize">${stats.favoriteTimeControl.name}</div>
+                                <div class="text-muted text-xs">FAVORITE MODE</div>
+                                <div class="text-lg font-bold" style="font-size: 0.9rem">${stats.favoriteTimeControl.name}</div>
+                            </div>
+                            <div style="grid-column: span 2">
+                                <div class="text-muted text-xs">BIGGEST RIVAL</div>
+                                <div class="text-lg font-bold">${stats.topOpponents[0]?.name || '-'}</div>
                             </div>
                         </div>
-                        <button onclick="location.reload()" class="nav-btn" style="position: static; margin-top: 3rem; width: 100%;">Analyze Another</button>
                     `
                 }
             ];

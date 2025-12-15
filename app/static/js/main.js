@@ -1,4 +1,3 @@
-// Global state variables
 let currentSlide = 0;
 let slides, progressDots, prevBtn, nextBtn, leftClickZone, rightClickZone;
 let TOTAL_SLIDES = 0;
@@ -82,7 +81,7 @@ function triggerSlideAnimations(slideIndex) {
     const animationClass = el.dataset.animation;
     if (animationClass) {
       el.classList.remove(animationClass);
-      void el.offsetWidth; // Force reflow
+      void el.offsetWidth;
       el.classList.add(animationClass);
     }
   });
