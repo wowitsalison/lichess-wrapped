@@ -71,7 +71,8 @@ def calculate_stats(games, username):
         is_white = white_user.get('id', '').lower() == username
         
         opponent = black_user.get('name', 'Anonymous') if is_white else white_user.get('name', 'Anonymous')
-        opponents[opponent] = opponents.get(opponent, 0) + 1
+        if opponent != "Anonymous":
+            opponents[opponent] = opponents.get(opponent, 0) + 1
         
         # Time control
         tc = game.get('speed', 'unknown')
@@ -112,3 +113,16 @@ def calculate_stats(games, username):
         'favoriteTimeControl': {'name': favorite_time_control[0], 'count': favorite_time_control[1]},
         'longestGame': longest_game['moves']
     }
+
+# Get most similar GM
+def get_similar_gm(stats):
+    # Placeholder function - implement logic to find most similar GM based on stats
+    return {
+        "name": "GM Example",
+        "profileUrl": "https://lichess.org/@/GMExample",
+        "avatarUrl": "https://lichess1.org/assets/images/avatars/GMExample.png"
+    }
+
+def get_opening_family(opening_name):
+    # Placeholder function - implement logic to get opening family
+    return "Example Opening Family"
