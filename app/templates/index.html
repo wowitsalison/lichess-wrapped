@@ -141,9 +141,11 @@
                     content: `
                         <div class="chess-piece xl glow-primary mb-4">♔</div>
                         <h2 class="font-display text-gradient" style="font-size: 3rem;">${username}</h2>
-                        <p class="text-muted stat-label mt-4">2025 SEASON</p>
+                        <p class="text-muted stat-label mt-4">2025</p>
                         <div class="stat-number animate-count-up delay-300" style="margin-top: 2rem">${stats.totalGames}</div>
                         <div class="stat-label">Games Played</div>
+                        <p class="text-muted stat-label mt-4" style="margin-top: 2rem">That's a lot...</div>
+                        <p class="text-muted stat-label mt-4">(Is that how you spend your free time?)</div>
                     `
                 },
                 // Slide 2: Top Opening
@@ -163,7 +165,7 @@
                     bg: 'slide-bg-3',
                     content: `
                         <div class="chess-piece large mb-4">◷</div>
-                        <h2 class="font-display text-primary mb-8">Time Control</h2>
+                        <h2 class="font-display text-primary mb-8">Your Top Time Control</h2>
                         <div class="time-control-card animate-slide-up delay-200" style="width: 100%">
                             <div class="time-control-info">
                                 <div class="stat-number" style="font-size: 4rem; text-transform: capitalize;">${stats.favoriteTimeControl.name}</div>
@@ -177,7 +179,7 @@
                     bg: 'slide-bg-4',
                     content: `
                         <div class="chess-piece large mb-4">🔥</div>
-                        <h2 class="font-display text-destructive mb-8">On Fire</h2>
+                        <h2 class="font-display text-destructive mb-8">Your Longest Streaks</h2>
                         <div class="bar-chart">
                             <div class="bar-item">
                                 <div class="stat-value text-primary" style="font-size: 2rem;">${stats.maxWinStreak}</div>

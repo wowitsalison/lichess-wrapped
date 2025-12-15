@@ -332,8 +332,8 @@ h1, h2, h3 {
   gap: 1rem;
   padding: 1rem;
   border-radius: 0.5rem;
-  background: hsla(150, 8%, 18%, 0.5);
-  backdrop-filter: blur(8px);
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .time-control-icon {
